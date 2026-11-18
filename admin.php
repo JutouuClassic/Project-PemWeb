@@ -1,13 +1,13 @@
 <?php
-include 'koneksi.php';
+require_once 'koneksi.php';
 
-// Cek apakah sesi admin aktif; jika belum, arahkan ke form login admin
+// Cek apakah sesi admin aktif
 if (!isset($_SESSION['admin'])) {
     header("Location: login.php?mode=admin");
     exit;
 }
 
-// --- PROSES UPDATE STATUS ANTREAN OLEH ADMIN ---
+// Proses update antrean
 if (isset($_GET['aksi_antrean']) && isset($_GET['id'])) {
     $id_antrean = (int)$_GET['id'];
     $aksi = $_GET['aksi_antrean'];
@@ -24,42 +24,19 @@ if (isset($_GET['aksi_antrean']) && isset($_GET['id'])) {
 }
 
 $hari_ini = date('Y-m-d');
-// Ambil semua data antrean hari ini
 $q_antrean = mysqli_query($conn, "SELECT a.*, p.nama_lengkap, p.no_bpjs FROM antrean a 
                                   JOIN pengguna p ON a.id_pengguna = p.id 
                                   WHERE a.tanggal='$hari_ini' ORDER BY a.id ASC");
-
-// Ambil semua data anggota BPJS
 $q_anggota = mysqli_query($conn, "SELECT * FROM pengguna ORDER BY id DESC");
-
 $tab = isset($_GET['tab']) && $_GET['tab'] == 'anggota' ? 'anggota' : 'antrean';
+
+// Konfigurasi Header
+$page_title = "Dashboard Admin BPJS";
+$is_admin_page = true;
+include 'header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin BPJS</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-</head>
-<body class="bg-light">
-
-<!-- NAVBAR ADMIN -->
-<nav class="navbar navbar-dark bg-dark shadow-sm">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="admin.php"><i class="bi bi-shield-lock text-warning"></i> Admin Panel BPJS</a>
-        <div class="d-flex gap-2">
-            <!-- Tombol kembali melihat halaman pengguna tanpa logout -->
-            <a href="index.php" class="btn btn-outline-light btn-sm"><i class="bi bi-eye"></i> Lihat Web Pengguna</a>
-            <!-- Tombol keluar khusus dari mode admin -->
-            <a href="login.php?aksi=logout_admin" class="btn btn-danger btn-sm"><i class="bi bi-box-arrow-right"></i> Keluar Mode Admin</a>
-        </div>
-    </div>
-</nav>
-
-<div class="container my-4">
+<div class="container my-4 flex-grow-1">
     <!-- Ringkasan Statistik Cepat -->
     <div class="row g-3 mb-4">
         <div class="col-md-4">
@@ -150,16 +127,19 @@ $tab = isset($_GET['tab']) && $_GET['tab'] == 'anggota' ? 'anggota' : 'antrean';
 
     <!-- TAB 2: PENDATAAN ANGGOTA BPJS -->
     <?php else: ?>
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
             <h5 class="mb-0 fw-bold">Master Data Peserta BPJS</h5>
-            <button class="btn btn-success btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalTambah">
-                <i class="bi bi-person-plus"></i> Tambah Anggota Baru
-            </button>
+            <div class="d-flex gap-2">
+                <input type="text" id="searchAnggota" class="form-control form-control-sm" placeholder="Cari nama, NIK, no BPJS..." style="max-width: 260px;">
+                <button class="btn btn-success btn-sm fw-bold text-nowrap" data-bs-toggle="modal" data-bs-target="#modalTambah">
+                    <i class="bi bi-person-plus"></i> Tambah Anggota
+                </button>
+            </div>
         </div>
 
         <div class="card border-0 shadow-sm">
             <div class="card-body table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-hover align-middle" id="tableAnggota">
                     <thead class="table-light">
                         <tr>
                             <th>No. BPJS</th>
@@ -184,7 +164,7 @@ $tab = isset($_GET['tab']) && $_GET['tab'] == 'anggota' ? 'anggota' : 'antrean';
                                 </td>
                             </tr>
 
-                            <!-- Modal Edit Anggota (Mengirim data ke anggota.php) -->
+                            <!-- Modal Edit Anggota -->
                             <div class="modal fade" id="modalEdit<?= $m['id'] ?>" tabindex="-1">
                                 <div class="modal-dialog">
                                     <form action="anggota.php" method="POST" class="modal-content">
@@ -231,7 +211,7 @@ $tab = isset($_GET['tab']) && $_GET['tab'] == 'anggota' ? 'anggota' : 'antrean';
             </div>
         </div>
 
-        <!-- Modal Tambah Anggota Baru (Mengirim data ke anggota.php) -->
+        <!-- Modal Tambah Anggota Baru -->
         <div class="modal fade" id="modalTambah" tabindex="-1">
             <div class="modal-dialog">
                 <form action="anggota.php" method="POST" class="modal-content">
@@ -278,6 +258,4 @@ $tab = isset($_GET['tab']) && $_GET['tab'] == 'anggota' ? 'anggota' : 'antrean';
     <?php endif; ?>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<?php include 'footer.php'; ?>

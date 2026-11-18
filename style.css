@@ -1,0 +1,38 @@
+/* Custom Stylesheet untuk Sistem BPJS */
+
+/* Background halaman login / auth */
+.auth-body {
+    background: linear-gradient(135deg, #00885A 0%, #005A8D 100%);
+    min-height: 100vh;
+}
+
+/* Card login & registrasi */
+.card-auth {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Desain Kartu Digital BPJS */
+.bpjs-card {
+    background: linear-gradient(120deg, #009B4C, #0072B5);
+    color: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 155, 76, 0.25);
+}
+
+/* Pilihan opsi poli */
+.poli-option {
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.poli-option:hover {
+    transform: translateY(-3px);
+    border-color: #009B4C !important;
+}
+
+/* Sticky footer opsional */
+footer {
+    margin-top: auto;
+}
